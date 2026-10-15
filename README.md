@@ -36,7 +36,9 @@ Daftar akun tidak ditampilkan pada dialog login dan password diperiksa memakai `
 | Berkas | Tanggung jawab |
 | --- | --- |
 | `index.php` | Titik masuk Apache dan XAMPP |
-| `api/index.php` | Controller PHP, autentikasi, sesi, CSRF, geocoding, cuaca, dan analisis awan |
+| `api/index.php` | Controller HTTP dan JSON; mengarahkan action ke fungsi PHP |
+| `auth.php` | Akun praktik, verifikasi password, cookie sesi, dan CSRF |
+| `weather.php` | Validasi koordinat dan akses lokasi, Open-Meteo, serta analisis awan |
 | `view.php` | Template halaman yang dirender PHP dan data awal sesi |
 | `app.js` | Interaksi antarmuka dan pemanggilan endpoint PHP |
 | `weather.js` | Pemetaan label/ikon cuaca dan validasi tampilan, tanpa kredensial akun |
@@ -44,6 +46,8 @@ Daftar akun tidak ditampilkan pada dialog login dan password diperiksa memakai `
 | `.htaccess` | Prioritas index.php, penonaktifan daftar folder, dan pembatasan berkas internal di Apache |
 | `tests/` | Pengujian PHP, JavaScript, dan alur HTTP |
 | `vercel.json` | Routing serta runtime PHP untuk deployment |
+
+Lima berkas PHP aplikasi adalah `index.php`, `view.php`, `api/index.php`, `auth.php`, dan `weather.php`. Berkas pengujian serta `var/key.php` yang dibuat otomatis tidak dihitung sebagai berkas fitur. Modul `auth.php` dan `weather.php` dimuat oleh controller melalui `require_once`; keduanya tidak dapat dijalankan langsung.
 
 ## API PHP
 
@@ -69,6 +73,8 @@ PHP memakai runtime komunitas **vercel-php@0.7.4** (PHP 8.3), bukan dukungan PHP
 php -l index.php
 php -l view.php
 php -l api/index.php
+php -l auth.php
+php -l weather.php
 php tests/server_test.php
 npm run check
 npm test
