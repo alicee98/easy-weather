@@ -5,7 +5,7 @@ export function weatherLabel(code){
  return labels[code] ?? 'Kondisi belum diketahui';
 }
 export function weatherIcon(code,isDay=1){if(code>=95)return '⛈';if([71,73,75,77,85,86].includes(code))return '❄';if(code>=51&&code<=82)return '🌧';if(code===45||code===48)return '🌫';if(code===3)return '☁';if(code===1||code===2)return isDay?'⛅':'☁';return code===0?(isDay?'☀':'☾'):'☁';}
-export function isDemoLogin(username,password){return username.trim().toLowerCase()==='demo'&&password==='cuaca123';}
+export function isDemoLogin(username,password){return ['alfi1','azlan2','ridho3','kayca4','raudha5'].includes(username.trim().toLowerCase())&&password==='easyweather';}
 export function canAccess(location,loggedIn){return loggedIn || (location.latitude===JAKARTA.latitude && location.longitude===JAKARTA.longitude);}
 export function cloudAnalysis(current){
  const values=[current.cloud_cover_low,current.cloud_cover_mid,current.cloud_cover_high];

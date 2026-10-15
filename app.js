@@ -42,7 +42,7 @@ function renderWeather(data){
 }
 $('auth-button').addEventListener('click',()=>{if(loggedIn){loggedIn=false;try{sessionStorage.removeItem('easy-weather-demo');}catch{}syncAuth();$('password').value='';$('username').value='';put('login-error','');closeSearch();selected=JAKARTA;hasData=false;lastData=null;loadWeather();}else $('login-dialog').showModal();});
 $('change-location').addEventListener('click',openLocation);$('refresh').addEventListener('click',loadWeather);
-$('login-form').addEventListener('submit',event=>{event.preventDefault();if(!isDemoLogin($('username').value,$('password').value)){put('login-error','Username atau password salah. Gunakan akun demo yang tercantum.');return;}loggedIn=true;try{sessionStorage.setItem('easy-weather-demo','yes');}catch{}syncAuth();put('login-error','');$('password').value='';$('login-dialog').close();openLocation();});
+$('login-form').addEventListener('submit',event=>{event.preventDefault();if(!isDemoLogin($('username').value,$('password').value)){put('login-error','Username atau password salah. Silakan coba lagi.');return;}loggedIn=true;try{sessionStorage.setItem('easy-weather-demo','yes');}catch{}syncAuth();put('login-error','');$('password').value='';$('login-dialog').close();openLocation();});
 for(const button of document.querySelectorAll('[data-close]'))button.addEventListener('click',()=>{if(button.dataset.close==='location-dialog')closeSearch();else $(button.dataset.close).close();});
 $('location-dialog').addEventListener('close',()=>searchRequest?.abort());
 for(const city of CITIES){const button=document.createElement('button');button.type='button';button.textContent=city.name;button.addEventListener('click',()=>chooseLocation(city));$('quick-cities').append(button);}

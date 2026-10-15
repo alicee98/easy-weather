@@ -24,8 +24,9 @@ Alternatif: jalankan `python -m http.server 8080` di direktori proyek, lalu buka
 
 ## Akun praktik
 
-- Username: `demo`
-- Password: `cuaca123`
+- Username: `alfi1`, `azlan2`, `ridho3`, `kayca4`, atau `raudha5`
+- Password untuk kelima akun: `easyweather`
+- Kredensial tidak ditampilkan pada dialog login.
 
 Login ini **simulasi di sisi browser**, bukan autentikasi server atau perlindungan data produksi. Penanda login disimpan di `sessionStorage` untuk tab tersebut dan dihapus saat logout. Tidak ada database atau akun pribadi; jangan gunakan kredensial pribadi. Pembatasan lokasi merupakan demonstrasi alur login, bukan kontrol akses API yang aman.
 
