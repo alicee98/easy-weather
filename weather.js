@@ -5,18 +5,9 @@ export function weatherLabel(code){
  return labels[code] ?? 'Kondisi belum diketahui';
 }
 export function weatherIcon(code,isDay=1){if(code>=95)return '⛈';if([71,73,75,77,85,86].includes(code))return '❄';if(code>=51&&code<=82)return '🌧';if(code===45||code===48)return '🌫';if(code===3)return '☁';if(code===1||code===2)return isDay?'⛅':'☁';return code===0?(isDay?'☀':'☾'):'☁';}
-export function isDemoLogin(username,password){return ['alfi1','azlan2','ridho3','kayca4','raudha5'].includes(username.trim().toLowerCase())&&password==='easyweather';}
-export function canAccess(location,loggedIn){return loggedIn || (location.latitude===JAKARTA.latitude && location.longitude===JAKARTA.longitude);}
-export function cloudAnalysis(current){
- const values=[current.cloud_cover_low,current.cloud_cover_mid,current.cloud_cover_high];
- if(values.some(v=>!Number.isFinite(v)))return {title:'Data lapisan awan belum tersedia',text:'Jenis awan tidak dapat diperkirakan tanpa data lapisan yang lengkap.'};
- if(current.weather_code>=95)return {title:'Indikasi awan konvektif',text:'Model memprakirakan badai petir. Kondisi ini berkaitan dengan awan Cumulonimbus, tetapi bentuk awan perlu dikonfirmasi melalui pengamatan.'};
- const max=Math.max(...values);if(max<20)return {title:'Awan sedikit di semua lapisan',text:'Tutupan tiap lapisan di bawah 20%. Belum ada lapisan awan yang dominan kuat; jenis awan tidak dapat ditentukan dari persentase saja.'};
- const names=['rendah','menengah','tinggi'];const examples=['Stratus atau Stratocumulus','Altostratus atau Altocumulus','Cirrus, Cirrostratus, atau Cirrocumulus'];
- const top=values.map((v,i)=>v===max?i:-1).filter(i=>i>=0);
- return {title:`Lapisan ${top.map(i=>names[i]).join(' & ')} dominan`,text:`Tutupan terbesar ${max}% pada lapisan ${top.map(i=>names[i]).join(' dan ')}. Contoh jenis yang mungkin dijumpai: ${top.map(i=>examples[i]).join('; ')}. Bentuk dan jenis pastinya memerlukan pengamatan visual.`};
-}
-export function forecastUrl(location){const params=new URLSearchParams({latitude:String(location.latitude),longitude:String(location.longitude),current:'temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,wind_speed_10m',hourly:'temperature_2m,precipitation_probability,weather_code,is_day',daily:'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max',timezone:'auto',forecast_days:'5'});return `https://api.open-meteo.com/v1/forecast?${params}`;}
 export function hourIndex(data){const hour=data.current.time.slice(0,13);return data.hourly.time.findIndex(t=>t.slice(0,13)===hour);}
 export function validWeather(data){return !!(data?.current&&Number.isFinite(data.current.temperature_2m)&&typeof data.current.time==='string'&&typeof data.timezone==='string'&&Array.isArray(data.hourly?.time)&&['temperature_2m','precipitation_probability','weather_code','is_day'].every(k=>Array.isArray(data.hourly[k])&&data.hourly[k].length===data.hourly.time.length)&&Array.isArray(data.daily?.time)&&['weather_code','temperature_2m_max','temperature_2m_min','precipitation_probability_max'].every(k=>Array.isArray(data.daily[k])&&data.daily[k].length===data.daily.time.length));}
-export async function fetchJSON(url,{signal}={}){const timeout=AbortSignal.timeout(18000);const combined=signal?AbortSignal.any([signal,timeout]):timeout;const response=await fetch(url,{signal:combined,headers:{Accept:'application/json'}});if(!response.ok)throw new Error(`Layanan cuaca merespons HTTP ${response.status}.`);const data=await response.json();if(data.error)throw new Error('Permintaan data ditolak oleh penyedia.');return data;}
+export async function fetchJSON(url,{signal}={}){const timeout=AbortSignal.timeout(28000);const combined=signal?AbortSignal.any([signal,timeout]):timeout;const response=await fetch(url,{signal:combined,headers:{Accept:'application/json'}});if(!response.ok)throw Object.assign(new Error((await response.json().catch(()=>({}))).error || `Server merespons HTTP ${response.status}.`),{status:response.status});const data=await response.json();if(data.error)throw new Error('Permintaan data ditolak oleh penyedia.');return data;}
+
+export function forecastUrl(location){const query=new URLSearchParams({action:'weather',latitude:String(location.latitude),longitude:String(location.longitude)});return `api/index.php?${query}`;}
+export function canAccess(location,loggedIn){return loggedIn||(location.latitude===JAKARTA.latitude&&location.longitude===JAKARTA.longitude);}

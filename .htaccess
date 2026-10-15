@@ -1,0 +1,8 @@
+DirectoryIndex index.php
+Options -Indexes
+<FilesMatch "^(view\.php|README\.md|package.*\.json|vercel\.json|.*\.test\.(js|php))$">
+    Require all denied
+</FilesMatch>
+
+RewriteEngine On
+RewriteRule ^(?:tests|var)(?:/|$) - [F,L]

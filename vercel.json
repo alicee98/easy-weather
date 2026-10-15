@@ -1,0 +1,28 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/index.php": {
+      "runtime": "vercel-php@0.7.4",
+      "maxDuration": 30,
+      "excludeFiles": "{tests/**,var/**,.git/**}"
+    }
+  },
+  "routes": [
+    {
+      "src": "/(app\\.js|weather\\.js|style\\.css|icon\\.svg)$",
+      "dest": "/$1"
+    },
+    {
+      "src": "/api/index\\.php",
+      "dest": "/api/index.php"
+    },
+    {
+      "src": "/(?:index\\.php|index\\.html)?",
+      "dest": "/api/index.php"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.php?action=not-found"
+    }
+  ]
+}
