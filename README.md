@@ -25,7 +25,15 @@ Daftar akun tidak ditampilkan pada dialog login dan password diperiksa memakai `
 
 - Jakarta dapat dilihat tanpa login.
 - Lokasi lain dan pencarian kota harus melewati pemeriksaan sesi pada endpoint PHP. Mengubah tampilan browser tidak membuka API yang dilindungi.
-- Cuaca terkini, enam slot per jam, lima hari prakiraan, dan analisis tiga lapisan awan.
+- Cuaca terkini, 24 jam ke depan, tujuh hari prakiraan, dan analisis tiga lapisan awan.
+- Menu kiri dengan ikon garis tiga, navigasi bagian cuaca, profil, dan logout.
+- Grafik 24 jam dengan pilihan suhu, peluang hujan, dan angin.
+- Indeks UV, jarak pandang, tekanan udara, titik embun, hembusan dan arah angin.
+- Presipitasi per jam dan total harian, waktu terbit/terbenam, dan durasi siang.
+- Estimasi genus awan dengan alasan, alternatif, serta kepastian kualitatif.
+- Saran aktivitas, perbandingan jendela aktivitas siang, dan catatan perhatian dari model.
+- Pilihan Celsius/Fahrenheit, tema terang/gelap, serta maksimal enam lokasi favorit per akun di perangkat.
+- Lokasi perangkat dipakai hanya setelah tombol pengguna dan izin browser; fitur ini memerlukan login.
 - Panduan sepuluh genus awan dan identitas tim.
 - Logout menghapus akses sesi di browser dan mengembalikan Jakarta.
 - Pembaruan manual dan otomatis setiap 10 menit saat halaman aktif.
@@ -87,3 +95,11 @@ Untuk pengujian alur HTTP, jalankan PHP server di terminal pertama, lalu `python
 [Open-Meteo Forecast API](https://open-meteo.com/en/docs) dan [Geocoding API](https://open-meteo.com/en/docs/geocoding-api), dengan atribusi [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Lokasi berdasarkan GeoNames. Gunakan sesuai ketentuan nonkomersial layanan.
 
 Kondisi terkini berasal dari model, bukan sensor tepat di lokasi pengguna. Analisis awan PHP memilih lapisan dominan dari tutupan rendah (hingga sekitar 3 km), menengah (3–8 km), dan tinggi (di atas 8 km). Jika semuanya di bawah 20%, hasilnya awan sedikit; ini aturan aplikasi. Kode badai petir menjadi indikasi kondisi konvektif. Contoh genus merupakan kemungkinan pembelajaran yang perlu dikonfirmasi secara visual. Lapisan dapat bertumpuk dan persentasenya tidak harus berjumlah 100%. Referensi genus: [WMO Cloud Atlas](https://cloudatlas.wmo.int/en/clouds-genera.html). Periksa [BMKG](https://www.bmkg.go.id/) untuk peringatan resmi.
+
+## Preferensi dan interpretasi
+
+Tema, satuan suhu, dan lokasi favorit disimpan di localStorage perangkat. Favorit dipisahkan menurut nama akun praktik. Password dan token sesi tidak disimpan di localStorage. Logout kembali ke Jakarta dan menutup akses lokasi lain. Geolokasi tidak diminta otomatis.
+
+Estimasi genus pada `ew_cloud_prediction` adalah heuristik dari tutupan lapisan, kode cuaca, kelembapan, dan siang/malam. Kepastian Rendah/Sedang bukan persentase akurasi atau probabilitas terkalibrasi. Tutupan sedikit tetap bisa memberi kandidat lemah; jika semua lapisan nol, tidak dipilih genus.
+
+Catatan perhatian dan rekomendasi aktivitas adalah turunan data model, bukan peringatan resmi BMKG. Jendela aktivitas membandingkan jam siang 07–18 dalam 24 jam ke depan dengan data hujan, UV, suhu, serta angin yang lengkap; bukan jaminan aman. Nilai fitur tambahan yang hilang tampil sebagai —.

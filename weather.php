@@ -41,3 +41,39 @@ function ew_upstream(string $host, string $path, array $query): array {
     if (!is_array($data) || ($data['error'] ?? false)) throw new RuntimeException('Respons penyedia data tidak valid.');
     return $data;
 }
+
+/** Educational heuristic, not a visual classifier or calibrated probability. */
+function ew_cloud_prediction(array $current): array {
+    $low = $current['cloud_cover_low'] ?? null;
+    $mid = $current['cloud_cover_mid'] ?? null;
+    $high = $current['cloud_cover_high'] ?? null;
+    foreach ([$low, $mid, $high] as $v) {
+        if ((!is_int($v) && !is_float($v)) || $v < 0 || $v > 100) {
+            return ['name' => 'Data belum cukup', 'confidence' => 'Belum tersedia', 'reason' => 'Data tiga lapisan awan belum lengkap.', 'alternatives' => 'Tunggu pembaruan data.'];
+        }
+    }
+    $code = $current['weather_code'] ?? -1;
+    $max = max($low, $mid, $high);
+    $basis = "Tutupan rendah {$low}%, menengah {$mid}%, tinggi {$high}%. ";
+    if (in_array($code, [95, 96, 99], true)) {
+        return ['name' => 'Cumulonimbus', 'confidence' => 'Sedang', 'reason' => $basis . 'Model menunjukkan badai petir, ciri cuaca yang berkaitan dengan awan konvektif.', 'alternatives' => 'Cumulus yang tumbuh vertikal di sekitar area badai.'];
+    }
+    if ($max == 0) return ['name' => 'Awan belum terindikasi', 'confidence' => 'Rendah', 'reason' => $basis . 'Tidak ada tutupan pada ketiga lapisan model. Genus awan tidak dapat dipilih.', 'alternatives' => 'Langit relatif cerah menurut model.'];
+    if (in_array($code, [61, 63, 65], true) && $low + $mid >= 50) {
+        return ['name' => 'Nimbostratus', 'confidence' => 'Sedang', 'reason' => $basis . 'Hujan dan tutupan lapisan rendah–menengah mendukung dugaan awan hujan berlapis.', 'alternatives' => 'Stratus atau Stratocumulus pengiring hujan.'];
+    }
+    if ($high >= $low && $high >= $mid) {
+        $name = $high >= 60 ? 'Cirrostratus' : 'Cirrus';
+        $why = $high >= 60 ? 'Lapisan tinggi tersebar luas; selaput awan tinggi menjadi kandidat.' : 'Lapisan tinggi paling dominan; serabut awan tipis menjadi kandidat.';
+        $other = 'Cirrus, Cirrostratus, atau Cirrocumulus.';
+    } elseif ($mid >= $low) {
+        $name = $mid >= 65 ? 'Altostratus' : 'Altocumulus';
+        $why = 'Lapisan menengah dominan; keluasan tutupannya digunakan untuk memilih kandidat lembaran atau gumpalan.';
+        $other = 'Altostratus atau Altocumulus.';
+    } else {
+        $name = $low < 50 && ($current['is_day'] ?? 0) == 1 ? 'Cumulus' : (($current['relative_humidity_2m'] ?? 0) >= 90 ? 'Stratus' : 'Stratocumulus');
+        $why = 'Lapisan rendah dominan; sebaran tutupan, kelembapan, dan waktu siang/malam menjadi petunjuk tambahan.';
+        $other = 'Cumulus, Stratus, atau Stratocumulus.';
+    }
+    return ['name' => $name, 'confidence' => 'Rendah', 'reason' => $basis . $why . ($max < 20 ? ' Tutupan sangat sedikit sehingga dugaan ini lebih lemah.' : ''), 'alternatives' => $other];
+}
