@@ -24,3 +24,9 @@ check(ew_cloud_analysis(['cloud_cover_low'=>6,'cloud_cover_mid'=>0,'cloud_cover_
 check(ew_cloud_analysis(['cloud_cover_low'=>80,'cloud_cover_mid'=>80,'cloud_cover_high'=>0])['title'] === 'Lapisan rendah & menengah dominan', 'nilai dominan seri');
 check(ew_cloud_analysis(['cloud_cover_low'=>0,'cloud_cover_mid'=>0,'cloud_cover_high'=>2])['title'] === 'Awan sedikit di semua lapisan', 'awan sedikit');
 check(ew_cloud_analysis([])['title'] === 'Data lapisan awan belum tersedia', 'lapisan kosong');
+check(ew_cloud_prediction(['cloud_cover_low'=>2,'cloud_cover_mid'=>0,'cloud_cover_high'=>3,'weather_code'=>0])['name'] === 'Cirrus', 'awan tipis tetap diberi kandidat rendah');
+check(ew_cloud_prediction(['cloud_cover_low'=>0,'cloud_cover_mid'=>0,'cloud_cover_high'=>0])['name'] === 'Awan belum terindikasi', 'tanpa awan tidak mengarang genus');
+check(ew_cloud_prediction(['cloud_cover_low'=>80,'cloud_cover_mid'=>60,'cloud_cover_high'=>90,'weather_code'=>95])['name'] === 'Cumulonimbus', 'petir mengindikasikan Cumulonimbus');
+check(ew_cloud_prediction(['cloud_cover_low'=>75,'cloud_cover_mid'=>80,'cloud_cover_high'=>0,'weather_code'=>63])['name'] === 'Nimbostratus', 'hujan berlapis mengindikasikan Nimbostratus');
+check(ew_cloud_prediction([])['confidence'] === 'Belum tersedia', 'data kosong tidak diberi kepastian');
+check(ew_cloud_prediction(['cloud_cover_low'=>-1,'cloud_cover_mid'=>1,'cloud_cover_high'=>2])['name'] === 'Data belum cukup', 'nilai lapisan tidak valid ditolak');
