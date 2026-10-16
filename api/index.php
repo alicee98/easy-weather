@@ -45,9 +45,10 @@ try {
     if ($action === 'weather') {
         [$lat, $lon] = ew_coordinates($_GET);
         if (!ew_can_access($lat, $lon, $loggedIn)) ew_json(['error' => 'Silakan login untuk mengakses lokasi lain.'], 401);
-        $data = ew_upstream('api.open-meteo.com', '/v1/forecast', ['latitude' => $lat, 'longitude' => $lon, 'current' => 'temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,wind_speed_10m', 'hourly' => 'temperature_2m,precipitation_probability,weather_code,is_day', 'daily' => 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max', 'timezone' => 'auto', 'forecast_days' => 5]);
+        $data = ew_upstream('api.open-meteo.com', '/v1/forecast', ['latitude' => $lat, 'longitude' => $lon, 'current' => 'temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,wind_speed_10m,wind_direction_10m,wind_gusts_10m,pressure_msl', 'hourly' => 'temperature_2m,precipitation_probability,weather_code,is_day,precipitation,visibility,uv_index,dew_point_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m', 'daily' => 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,daylight_duration,uv_index_max,precipitation_sum,wind_speed_10m_max,wind_gusts_10m_max', 'timezone' => 'auto', 'forecast_days' => 7]);
         if (!is_array($data['current'] ?? null) || !is_array($data['hourly'] ?? null) || !is_array($data['daily'] ?? null)) throw new RuntimeException('Data prakiraan belum lengkap.');
-        $data['cloud_analysis'] = ew_cloud_analysis($data['current']); ew_json($data);
+        $data['cloud_analysis'] = ew_cloud_analysis($data['current']);
+        $data['cloud_analysis']['prediction'] = ew_cloud_prediction($data['current']); ew_json($data);
     }
     if ($action === 'search') {
         if (!$loggedIn) ew_json(['error' => 'Silakan login untuk mencari kota.'], 401);
